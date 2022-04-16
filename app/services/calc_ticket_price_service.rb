@@ -31,7 +31,7 @@ class CalcTicketPriceService
       end
     when 2
       percents.inject(@ticket.start_price) do |price, ticket|
-        if ((150 - @event.current_vip.count) / 1.5)
+        if ((50 - @event.current_vip.count) / 0.5)
             .between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
           price += (price / 100 * ticket)
         end
