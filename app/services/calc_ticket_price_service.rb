@@ -1,7 +1,11 @@
 class CalcTicketPriceService
-  def initialize(ticket, event)
-    @ticket = ticket
-    @event = event
+  def initialize(ticket_type, event_date)
+    @ticket_type = ticket_type
+    @event_date = event_date
+
+    @event_current_simple_count = RequestEventInfoService.new(event_date).call
+    @event_current_vip_count = RequestEventInfoService.new(event_date).call
+    @ticket_price = RequestTicketInfoService.new(ticket_type).call
   end
 
   def call
@@ -15,30 +19,25 @@ class CalcTicketPriceService
   end
 
   def right_date?
-    Time.now <= @event.date_start
+    Time.now <= @event_date
   end
 
   def calculation_by_ticket_type
     percents = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
-    case @ticket.type
+    case @ticket_type
     when 1
-      percents.inject(@ticket.start_price) do |price, ticket|
-        if ((150 - @event.current_simple.count) / 1.5)
-            .between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
+      percents.inject(@ticket_price) do |price, ticket|
+        if ((150 - @event_current_simple_count) / 1.5).between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
           price += (price / 100 * ticket)
         end
       end
     when 2
-      percents.inject(@ticket.start_price) do |price, ticket|
-        if ((50 - @event.current_vip.count) / 0.5)
-            .between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
+      percents.inject(@ticket_price) do |price, ticket|
+        if ((50 - @event_current_vip_count) / 0.5).between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
           price += (price / 100 * ticket)
         end
       end
     end
   end
 end
-
-# @event.current_vip - оставшиеся билеты типа vip
-# @event.current_simple - оставшиеся билеты типа simple
