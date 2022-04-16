@@ -1,13 +1,17 @@
-version: '3'
+version: '3.7'
 services:
-  data:
-    build: ./data/
-    volumes:
-      - ./data/:/data
+  management:
+    build: .
+    command: rails s -b 0.0.0.0
     ports:
-      -3000:3000
+      - 3000:3000
+    volumes:
+      - .:/usr/src
     depends_on:
       - db
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379/0
   db:
     image: postgres:11.5
     environment:
@@ -15,3 +19,17 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres:/var/lib/postgresql/data
+  sidekiq:
+    build: .
+    command: sidekiq
+    volumes:
+      - ./:/usr/src/
+    environment:
+      REDIS_URL: redis://redis:6379/0
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis:/data
+volumes:
+  postgres:
+  redis:
