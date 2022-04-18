@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   # get 'events/create'
   # get 'events/update'
+
   resources :events
   
   resources :tickets do

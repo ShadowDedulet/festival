@@ -1,20 +1,19 @@
-class Api::EventsController < ApplicationController
+class EventsController < ApplicationController
   before_action :set_event, only: %i[ show update ]
   
   # просмотр наступающих и идущих мероприятий доступен пользователю и администратору
   # просмотр всех мероприятий доступен только администратору (прошедшие и нет)
   def index
-    event = (params[:role] == 'admin' && params[:all]) ? Event.all : Event.not_ended
-    render json: event, status: :ok
+    render json: Event.not_ended
   end
 
   # Просматривать определенные билеты может пользователь(только те, которые принадлежат ему) и администратор любые
   def show
-    tickets = params[:all] && params[:role] == 'admin' ? @event.tickets : @event.tickets.where(status: :accessed)
-    render json: { event: @event, tickets: tickets }, status: :ok
+    event = Event.find(params[:id])
+    render json: event.tickets
   end
 
-  # Создавать билеты может только администратор
+  # Создавать мероприятия может только администратор
   def create
     event = Event.new(event_params)
     if event.save

@@ -1,5 +1,5 @@
 class Reserve < ApplicationRecord
   belongs_to :ticket
 
-  validations :ticket, presence: true
+  validates :ticket, presence: true
 end

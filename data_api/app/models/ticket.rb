@@ -1,6 +1,6 @@
 class Ticket < ApplicationRecord
   belongs_to :event
-  has_one :reserve
+  has_one :reserve, dependent: :destroy
 
   # Enum для типа билета и статуса
   enum ticket_type: { fan_zone: 0,  vip: 2 }

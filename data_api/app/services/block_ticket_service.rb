@@ -11,7 +11,7 @@ class BlockTicketService
     ticket = Ticket.find(ticket_id).blocked! # смена статуса на заблокирован
   rescue ActiveRecord::RecordNotFound
     { result: false, error: 'Ticket not found', status: 406 }
-  rescue err
+  rescue => err
     { result: false, error: err.message, status: 403 }
   else
     { result: true, status: 200 }

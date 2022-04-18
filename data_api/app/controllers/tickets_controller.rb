@@ -1,4 +1,4 @@
-class Api::TicketsController < ApplicationController
+class TicketsController < ApplicationController
   before_action :set_ticket, only: :show 
   
   # GET /tickets ## Выводит список билетов в зависимости от параметров user_id или event_id 

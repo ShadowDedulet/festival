@@ -1,7 +1,7 @@
 class Event < ApplicationRecord
   include ActiveModel::Validations # Кастомная валидация даты
 
-  has_many :tickets # DB Relationship
+  has_many :tickets, dependent: :destroy # DB Relationship
 
   # Валидации модели
   validates :name, presence: true
