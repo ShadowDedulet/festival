@@ -1,8 +1,3 @@
 Rails.application.routes.draw do
-  mount Sidekiq::Web => '/sidekiq'
-
-  resources :users do
-    
-  end
-
+  resource :login, only: %i[show create destroy]
 end

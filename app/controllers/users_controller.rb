@@ -1,71 +1,34 @@
 class UsersController < ApplicationController
-  # возвращает журнал входа / выхода посетителей по типу действия (entry / exit)
-  def journal
+  before_action :set_user, only: %i[show tickets]
+  
+  # возвращает журнал входа посетителей по типу действия: entry
+  def journal_entry
+    response = HTTParty.get('http://service_name/journal?action=entry')
+    render json: response.body
+  end
 
+  # возвращает журнал выхода посетителей по типу действия: exit
+  def journal_exit
+    response = HTTParty.get('http://service_name/journal?action=exit')
+    render json: response.body
   end
 
   # возвращает домашнюю страницу пользователя
-  def index
-
-  end
-
-  # возвращает форму авторизации (опционально)
-  def login
-
-  end
+  def show; end
 
   # возвращает все билеты пользователя по параметру user_id
   def tickets
-
+    response = HTTParty.get("http://service_name/tickets?user_id=#{@user.id}")
+    render json: response.body
   end
 
-  # возвращает форму покупки билета
-  def get_purchase
-
-  end
-
-  # возвращает идентификатор купленного билета
-  def purchase
-
-  end
-
-  # возвращает форму бронирования билета
-  def get_reserve
-
-  end
-
-  # возвращает reserve_id и время окончания брони
-  def reserve
-
-  end
-
-  # возвращает фору отмены брони
-  def get_cancel_reservation
-
-  end
-
-  # возвращает результат отмены брони: True or False
-  def cancel_reservation
-
-  end
-
-  # возвращает форму блокировки билета
-  def get_block_ticket
-
-  end
-
-  # возвращает результат блокировки билета: True or False и сообщение об ошибке
-  def block_ticket
-
-  end
-  
   private
 
-  def journal_entry
-
+  def set_user
+    @user = User.find(params[:id])
   end
 
-  def journal_exit
-
+  def user_params
+    params.require(:user).permit(:fcs, :age, :document_number, :document_type, :role, :login, :password)
   end
 end

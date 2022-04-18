@@ -22,6 +22,11 @@ class CalcTicketPriceService
     Time.now <= @event_date
   end
 
+   # возвращает кол-во и цену билетов каждой категории для мероприятия
+   def get_available_tickets
+
+   end
+
   def calculation_by_ticket_type
     percents = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 

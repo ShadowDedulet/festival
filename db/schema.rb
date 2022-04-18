@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_16_143506) do
+ActiveRecord::Schema.define(version: 2022_04_18_120422) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 2022_04_16_143506) do
   create_table "users", force: :cascade do |t|
     t.string "fcs"
     t.integer "age"
-    t.integer "document_type"
+    t.integer "document_type", default: 0
     t.string "document_number"
     t.integer "role", default: 0
     t.string "login"
