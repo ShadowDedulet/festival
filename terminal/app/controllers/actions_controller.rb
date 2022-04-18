@@ -1,75 +1,56 @@
 class ActionsController < ApplicationController
   before_action :validate_params, only: %i[enter exit]
-  before_action :validate_zone, only: %i[enter exit]
   before_action :last_action, only: %i[enter exit]
+
   after_action :save_action, only: %i[enter exit]
 
+
+  # Вывод всего журнала
   def index
     render json: Action.all.as_json(except: [:updated_at])
   end
 
+
+  # Вход
+  # - создаем новую запись
+  # - проверяем возможность входа
   def enter
-    pp @last_action
+    @action = Action.new(action: 1, fio: @ret[:fio], ticket_id: @ret[:ticket_id])
 
-    @action = Action.new(action: 1, fio: @params[:fio], ticket_id: @params[:ticket_id])
-
-    if @last_action['action'] == 'enter'
-      @action.status = false
-      return render json: { result: 'false', error: 'Already entered' }
-    end
-
-    @action.status = true
-    render json: { result: 'true' }
+    return render json: ActionService.new('enter', @action, @last_action).call
   end
 
+
+  # Выход (аналогично)
   def exit
-    @action = Action.new(action: 0, fio: @params[:fio], ticket_id: @params[:ticket_id])
+    @action = Action.new(action: 0, fio: @ret[:fio], ticket_id: @ret[:ticket_id])
 
-    if @last_action['action'] == 'exit'
-      @action.status = false
-      return render json: { result: 'false', error: 'Already exited' }
-    end
-
-    @action.status = true
-    render json: { result: 'true' }
+    return render json: ActionService.new('exit', @action, @last_action).call
   end
 
   private
 
+  # Проверяем query
   def validate_params
-    raise ArgumentError, 'Empty ticket id' unless params[:ticket_id]
-    raise ArgumentError, 'Empty zone type' unless params[:zone_type]
+    @ret =  ActionParamsService.new(params).call
 
-    @params = {}
-    @params[:ticket_id] = params[:ticket_id]
-    @params[:zone_type] = params[:zone_type]
-  rescue ArgumentError => e
-    render json: { result: 'false', error: e }, status: :not_acceptable
+    if @ret[:response]
+      @action = Action.new(
+        action: params['action'], fio: @ret[:fio], status: false, ticket_id: @ret[:ticket_id]
+      ) if @ret[:fio] && @ret[:ticket_id]
+
+      render json: @ret[:response], status: :not_acceptable
+    end
   end
 
-  def validate_zone
-    # ticket = FetchService.call("http://data:3000/tickets/#{@params[:ticket_id]}")
-    ticket = { 'fio' => "fio_#{rand(100..200)}", 'type' => '1' } # заглушка
-
-    # if no such ticket_id
-    return render json: { result: 'false', error: 'Wrong zone type' }, status: :not_acceptable unless ticket
-
-    @params[:fio] = ticket['fio']
-
-    return if ticket['type'] == @params[:zone_type]
-
-    Action.create(action: params['action'], fio: @params[:fio], status: false, ticket_id: @params[:ticket_id])
-    render json: { result: 'false', error: 'Wrong zone type' }, status: :not_acceptable
-  end
-
+  # Получаем последнее успешное событие
   def last_action
-    @last_action = Action.where(ticket_id: @params[:ticket_id], status: true)
-                         .order('created_at DESC').first.as_json
-    return if @last_action
+    @last_action = Action.where(ticket_id: @ret[:ticket_id], status: true).order('created_at DESC').first
 
-    @last_action = { 'action' => 'exit', 'fio' => @params[:fio], 'status' => true, 'ticket_id' => @params[:ticket_id] }
+    @last_action = { 'action' => 'exit' } if @last_action.blank?
   end
-
+  
+  # Сохраняем новую запись
   def save_action
     @action.save
   end
