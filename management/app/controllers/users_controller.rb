@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  skip_before_action :require_login, only: [:new, :create]
+  skip_before_action :require_login, only: %i[new create]
   before_action :set_user, only: :tickets
 
   def new
@@ -12,7 +12,7 @@ class UsersController < ApplicationController
       session[:user_id] = @user.id
       redirect_to @user
     else
-      flash[:error] = "Error- please try to create an account again."
+      flash[:error] = 'Error- please try to create an account again.'
       redirect_to new_user_path
     end
   end
@@ -21,12 +21,12 @@ class UsersController < ApplicationController
   def show
     @user = User.find(params[:id])
   end
-  
+
   # возвращает журнал входа посетителей по типу действия: entry
   def journal
     if current_user.admin?
       response = HTTParty.get('http://terminal:8080/journal')
-      
+
       respond_to do |format|
         if params[:action] == 'entry'
           format.json { render json: response.body[:entry] }
@@ -55,14 +55,57 @@ class UsersController < ApplicationController
     render :purchase_form
   end
 
+  def purchase
+    return json: { error: 'Must be at least 13 y/o' } if params[:age] < 13
+
+    user = {
+      fio: params[:fio],
+      age: params[:age],
+      document_number: params[:document_number],
+      document_type: params[:document_type]
+    }
+
+    # Осуществить проверки:
+    #   На наличие такого фио по дате
+    #   На наличие такого док_тип + док_нам по дате
+    response = PostService.call(
+      'http://data:3000/tickets/purchase',
+      { reservation_id: params[:reservation_id], user: user }
+    )
+
+    session.delete(:reservation_id) if response[:result]
+  end
+
   # возвращает форму бронирования билета
   def get_reserve
     render :reserve_form
   end
 
+  def reserve
+    response = PostService.call(
+      'http://data:3000/tickets/reserve',
+      { ticket_type: params[:ticket_type], event_date: params[:event_date] }
+    )
+
+    session[:reservation_id] = response[:reservation_id] if response[:result]
+
+    redirect_to user_get_purchase_path
+  end
+
   # возвращает форму отмены брони
   def get_cancel_reservation
     render :cancel_reservation_form
+  end
+
+  def cancel_reservation
+    response = PostService.call(
+      'http://data:3000/tickets/cancel_reservation',
+      { reservation_id: params[:reservation_id] }
+    )
+
+    session.delete(:reservation_id) if response[:result]
+
+    redirect_to user_show_path
   end
 
   # возвращает форму блокировки билета
@@ -74,6 +117,17 @@ class UsersController < ApplicationController
     end
   end
 
+  def block_ticket
+    redirect_to :back, notice: 'Access to admin only!' unless current_user.admin?
+
+    response = PostService.call(
+      'http://data:3000/tickets/block_ticket',
+      { ticket_id: params[:ticket_id], document_number: params[:document_number] }
+    )
+
+    redirect_to user_show_path
+  end
+
   private
 
   def set_user
@@ -83,6 +137,6 @@ class UsersController < ApplicationController
   def user_params
     pp = params.require(:user).permit(:fio, :age, :document_type, :document_number, :login, :password)
     pp[:document_type] = params[:user][:document_type].to_i
-    return pp
+    pp
   end
 end
