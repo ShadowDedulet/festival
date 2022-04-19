@@ -66,7 +66,7 @@ class UsersController < ApplicationController
   end
 
   def purchase
-    return json: { error: 'Must be at least 13 y/o' } if params[:age] < 13
+    # return json: { error: 'Must be at least 13 y/o' } if params[:age] < 13
 
     user = {
       fio: params[:fio],
@@ -84,6 +84,9 @@ class UsersController < ApplicationController
     )
 
     session.delete(:reservation_id) if response[:result]
+
+    # TODO: redirect
+    render json: response
   end
 
   # возвращает форму бронирования билета
@@ -97,8 +100,10 @@ class UsersController < ApplicationController
       { ticket_type: params[:ticket_type], event_date: params[:event_date] }
     )
 
-    session[:reservation_id] = response[:reservation_id] if response[:result]
+    # расскоментировать при заполнении data данными
+    # return redirect_to user_get_reserve_path unless response[:result]
 
+    session[:reservation_id] = response[:reservation_id] if response[:result]
     redirect_to user_get_purchase_path
   end
 
@@ -115,27 +120,29 @@ class UsersController < ApplicationController
 
     session.delete(:reservation_id) if response[:result]
 
-    redirect_to user_show_path
+    # TODO: redirect
+    render json: response
   end
 
   # возвращает форму блокировки билета
   def get_block_ticket
-    if current_user.admin?
-      render :block_ticket_form
-    else
-      redirect_to :back, notice: 'Access to admin only!'
-    end
+    # if current_user.admin?
+    render :block_ticket_form
+    # else
+    # redirect_to :back, notice: 'Access to admin only!'
+    # end
   end
 
   def block_ticket
-    redirect_to :back, notice: 'Access to admin only!' unless current_user.admin?
+    # redirect_to :back, notice: 'Access to admin only!' unless current_user.admin?
 
     response = PostService.call(
       'http://data:3000/tickets/block_ticket',
       { ticket_id: params[:ticket_id], document_number: params[:document_number] }
     )
 
-    redirect_to user_show_path
+    # TODO: redirect
+    render json: response
   end
 
   private
