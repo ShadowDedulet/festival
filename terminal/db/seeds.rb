@@ -8,12 +8,23 @@
 
 Action.delete_all
 
-10.times do |_i|
-  rnd_id = rand(1..5)
+actions = [
+  { action_type: 1, status: 1, fio: 'fio_1', ticket_id: 1 },
+  { action_type: 1, status: 1, fio: 'fio_2', ticket_id: 2 },
+  { action_type: 0, status: 1, fio: 'fio_1', ticket_id: 1 },
+  { action_type: 0, status: 0, fio: 'fio_1', ticket_id: 1 },
+  { action_type: 1, status: 1, fio: 'fio_3', ticket_id: 3 },
+  { action_type: 1, status: 0, fio: 'fio_3', ticket_id: 3 },
+  { action_type: 0, status: 1, fio: 'fio_2', ticket_id: 2 },
+  { action_type: 1, status: 1, fio: 'fio_2', ticket_id: 2 }
+]
+
+actions.each do |a|
   Action.create(
-    action: rand(2),
-    status: rand(2),
-    fio: "fio_#{rnd_id}",
-    ticket_id: rnd_id * 10
+    action_type: a[:action_type],
+    status: a[:status],
+    fio: a[:fio],
+    ticket_id: a[:ticket_id]
   )
+  sleep(rand)
 end

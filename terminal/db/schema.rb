@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_17_170337) do
+ActiveRecord::Schema.define(version: 2022_04_18_231405) do
 
   create_table "actions", force: :cascade do |t|
-    t.integer "action"
+    t.integer "action_type"
     t.string "fio"
     t.boolean "status"
     t.integer "ticket_id"
