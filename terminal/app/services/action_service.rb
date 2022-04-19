@@ -5,14 +5,14 @@ class ActionService
     @action_obj = action_obj
     @last_action = last_action
   end
-  
+
   def call
     # Попытка повторить событие
     if @last_action['action'] == @action_name
       @action_obj.status = false
       return { result: 'false', error: "Already #{@action_name}ed" }
     end
-  
+
     # Все ок
     @action_obj.status = true
     { result: 'true' }
