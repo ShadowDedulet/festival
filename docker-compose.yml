@@ -12,13 +12,37 @@ services:
       - redis
     environment:
       REDIS_URL: redis://redis:6379/0
+
+  data:
+    build: ./data_api/
+    volumes:
+      - ./data_api/:/data
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+
+  terminal:
+    build: ./terminal/
+    image: terminal:latest
+    container_name: terminal
+    volumes:
+      - ./terminal/:/terminal
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+
+
   db:
     image: postgres:11.5
+    container_name: db
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
       - postgres:/var/lib/postgresql/data
+
   sidekiq:
     build: .
     command: sidekiq
@@ -30,6 +54,8 @@ services:
     image: redis:alpine
     volumes:
       - redis:/data
+
 volumes:
   postgres:
   redis:
+
