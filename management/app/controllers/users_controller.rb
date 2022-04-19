@@ -44,6 +44,13 @@ class UsersController < ApplicationController
     end
   end
 
+  # возвращает информацию обо всех мероприятиях
+  def events
+    events = HTTParty.get('http://data:3000/events')
+    render json: events
+  end
+
+  # возвращает информацию о юзере
   def user_info
     render json: current_user, except: :password_digest
   end
