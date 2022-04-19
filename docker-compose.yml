@@ -3,7 +3,6 @@ services:
   management:
     build: ./management/
     image: festival_management:latest
-    container_name: management
     volumes:
       - ./management/:/management
     ports:
@@ -16,7 +15,6 @@ services:
 
   data:
     build: ./data_api/
-    container_name: data
     volumes:
       - ./data_api/:/data
     depends_on:
@@ -24,6 +22,7 @@ services:
 
   terminal:
     build: ./terminal/
+    image: terminal:latest
     volumes:
       - ./terminal/:/terminal
     depends_on:
@@ -31,7 +30,6 @@ services:
 
   db:
     image: postgres:11.5
-    container_name: db
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -40,7 +38,6 @@ services:
 
   sidekiq:
     build: ./management/
-    container_name: sidekiq
     command: sidekiq
     volumes:
       - ./management/:/management
