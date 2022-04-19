@@ -2,9 +2,6 @@ class CalcTicketPriceService
   def initialize(ticket_type, event_date)
     @ticket_type = ticket_type
     @event_date = event_date
-
-    @event_current_simple_count = RequestEventInfoService.new(event_date).call
-    @event_current_vip_count = RequestEventInfoService.new(event_date).call
   end
 
   def call
@@ -26,17 +23,32 @@ class CalcTicketPriceService
 
     case @ticket_type
     when 1
-      percents.inject(1000) do |price, ticket|
-        if ((150 - @event_current_simple_count) / 1.5).between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
+      percents.inject(current_tickets[:fan_zone][:price]) do |price, ticket|
+        if ((150 - current_tickets[:fan_zone][:amount]) / 1.5).between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
           price += (price / 100 * ticket)
         end
       end
     when 2
-      percents.inject(2000) do |price, ticket|
-        if ((50 - @event_current_vip_count) / 0.5).between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
+      percents.inject(current_tickets[:vip][:price]) do |price, ticket|
+        if ((50 - current_tickets[:vip][:amount]) / 0.5).between?(ticket, percents[percents.index(ticket).next]) && ticket != 100
           price += (price / 100 * ticket)
         end
       end
     end
+  end
+
+  def event_id
+    id = 0
+
+    response = HTTParty.get('http://data/events')
+
+    response.body.each do |event|
+      id += event[:id] if event[:date_start] == @event_date
+    end
+    id
+  end
+
+  def current_tickets
+    HTTParty.get("http://data:3000/tickets?event_id=#{event_id}")
   end
 end

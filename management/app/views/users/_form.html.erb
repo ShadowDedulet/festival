@@ -2,22 +2,22 @@
 
 <p>
   <strong>ФИО:</strong>
-  <%= @user.fio %>
+  <%= current_user.fio %>
 </p>
 
 <p>
   <strong>Возраст:</strong>
-  <%= @user.age %>
+  <%= current_user.age %>
 </p>
 
 <p>
   <strong>Документ:</strong>
-  <%= @user.document_type %>
+  <%= current_user.document_type %>
 </p>
 
 <p>
   <strong>Номер документа:</strong>
-  <%= @user.document_number %>
+  <%= current_user.document_number %>
 </p>
 
 <%= button_to "Sign out", session_path, method: :delete %>

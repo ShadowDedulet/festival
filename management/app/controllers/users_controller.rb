@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
   skip_before_action :require_login, only: [:new, :create]
-  # before_action :set_user, only: :tickets
 
   def new
     @user = User.new
@@ -18,22 +17,12 @@ class UsersController < ApplicationController
   end
 
   # возвращает домашнюю страницу пользователя
-  def show
-    @user = User.find(params[:id])
-  end
-
+  def show; end
+  
   # возвращает журнал входа посетителей по типу действия: entry
   def journal
     if current_user.admin?
-      response = HTTParty.get('http://terminal:8080/journal')
-
-      respond_to do |format|
-        if params[:action] == 'entry'
-          format.json { render json: response.body[:entry] }
-        elsif params[:action] == 'exit'
-          format.json { render json: response.body[:exit] }
-        end
-      end
+      @journal = HTTParty.get("http://terminal:3000/journal")
     else
       redirect_to :back, notice: 'Access to admin only!'
     end
@@ -56,8 +45,7 @@ class UsersController < ApplicationController
   end
 
   def user_info
-    user = User.find(params[:user_id])
-    render json: user
+    render json: current_user, except: :password_digest
   end
 
   # возвращает форму покупки билета
@@ -148,12 +136,8 @@ class UsersController < ApplicationController
 
   private
 
-  def set_user
-    @user = User.find(params[:id])
-  end
-
   def user_params
-    pp = params.require(:user).permit(:fio, :age, :document_type, :document_number, :login, :password)
+    pp = params.require(:user).permit(:id, :fio, :age, :document_type, :document_number, :login, :password)
     pp[:document_type] = params[:user][:document_type].to_i
     pp
   end
