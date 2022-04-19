@@ -1,6 +1,10 @@
-require "active_support/core_ext/integer/time"
+require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
+  config.hosts << 'data'
+  config.hosts << 'management'
+  config.hosts << 'terminal'
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded any time
@@ -53,7 +57,6 @@ Rails.application.configure do
 
   # Highlight code that triggered database queries in logs.
   config.active_record.verbose_query_logs = true
-
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
