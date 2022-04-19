@@ -1,1 +1,21 @@
-<h1>Hey</h1>
+<p>
+  <strong>ФИО:</strong>
+  <%= @user.fio %>
+</p>
+
+<p>
+  <strong>Возраст:</strong>
+  <%= @user.age %>
+</p>
+
+<p>
+  <strong>Документ:</strong>
+  <%= @user.document_type %>
+</p>
+
+<p>
+  <strong>Номер документа:</strong>
+  <%= @user.document_number %>
+</p>
+
+<%= link_to 'Back', :back %> |

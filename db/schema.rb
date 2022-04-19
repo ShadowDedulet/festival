@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 2022_04_18_120422) do
   enable_extension "plpgsql"
 
   create_table "users", force: :cascade do |t|
-    t.string "fcs"
+    t.string "fio"
     t.integer "age"
     t.integer "document_type", default: 0
     t.string "document_number"
