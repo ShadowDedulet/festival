@@ -83,7 +83,7 @@ class UsersController < ApplicationController
       { reservation_id: params[:reservation_id], user: user }
     )
 
-    session.delete(:reservation_id) if response[:result]
+    session.delete(:reservation_id) unless response['err']
 
     # TODO: redirect
     render json: response
@@ -101,9 +101,10 @@ class UsersController < ApplicationController
     )
 
     # расскоментировать при заполнении data данными
-    # return redirect_to user_get_reserve_path unless response[:result]
+    # return redirect_to user_get_reserve_path unless response[:err]
 
-    session[:reservation_id] = response[:reservation_id] if response[:result]
+    session[:reservation_id] = response['reservation_id'] unless response['err']
+    pp(['id:', response['reservation_id']])
     redirect_to user_get_purchase_path
   end
 
@@ -118,7 +119,7 @@ class UsersController < ApplicationController
       { reservation_id: params[:reservation_id] }
     )
 
-    session.delete(:reservation_id) if response[:result]
+    session.delete(:reservation_id) unless response['err']
 
     # TODO: redirect
     render json: response
