@@ -1,15 +1,16 @@
 class TicketsController < ApplicationController
-  before_action :set_ticket, only: :show 
+  # before_action :set_ticket, only: :show 
   
   # GET /tickets ## Выводит список билетов в зависимости от параметров user_id или event_id 
   def index
     render json: SelectTicketsService.new(params).call 
   end
 
-  # Пока не знаю для чего он
+  # Получение билета для журнала
   def show
-    ticket = Ticket.find_by_id(params[:id])
-    render json: { event: ticket.event, ticket: ticket }, status: :ok
+    ticket = FindTicketService.new(params[:id]).call
+    status = ticket.delete(:status)
+    render json: ticket, status: status
   end
 
   # POST /reserve ## Бронирование билетов 
@@ -31,11 +32,5 @@ class TicketsController < ApplicationController
     blocked = BlockTicketService.new(params).call
     status = blocked.delete(:status)
     render json: blocked, status: status
-  end
-
-  private
-
-  def set_ticket
-    @ticket = Event.find_by_id(params[:id]).where(user_id: params[:user]).tickets.find_by_id(params[:ticket])
   end
 end

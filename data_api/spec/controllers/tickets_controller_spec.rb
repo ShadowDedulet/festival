@@ -23,6 +23,40 @@ RSpec.describe TicketsController, type: :controller do
     end
   end
 
+  describe 'GET /show' do
+    before(:all) do
+      date = DateTime.now + 1.day
+      event = Event.create(name: 'Rock', date_start: date, date_end: date + 3.hour)
+      @ticket = event.tickets.create(ticket_type: :fan_zone, status: :sold, start_price: 1000, user_id: 1)
+    end
+
+    after(:all) do
+      Event.destroy_all
+    end
+
+    it 'should not find ticket with id and return status 406' do
+      get :show, params: { id: @ticket.id + 1 }
+      expect(JSON.parse(response.body)['error']).to eq 'Ticket not found'
+    end
+
+    it 'should not connect to service and return status 503' do
+      stub_request(:get, "http://management:3000/users?id=1")
+        .with( headers: { 'Connection' => 'close', 'Host' => 'management:3000', 'User-Agent' => 'http.rb/5.0.4' } )
+        .to_return(status: 403, body: { result: false }.to_json, headers: {})
+      get :show, params: { id: @ticket.id }
+      expect(response.status).to eq 503
+    end
+
+    it 'should return user fio with status 200' do
+      user = { id: 1, fio: 'Nasibullin Danil', age: 20, document_type: 'pasport', document_number: '1234 123456', role: 'user' }
+      stub_request(:get, "http://management:3000/users?id=1")
+        .with( headers: { 'Connection' => 'close', 'Host' => 'management:3000', 'User-Agent' => 'http.rb/5.0.4' } )
+        .to_return(status: 200, body: user.to_json, headers: {})
+      get :show, params: { id: @ticket.id }
+      expect(JSON.parse(response.body)['fio']).to eq 'Nasibullin Danil' 
+    end
+  end
+
   describe 'POST /reserve' do
     before(:all) do
       date = DateTime.now + 2.day
