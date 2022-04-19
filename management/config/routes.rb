@@ -3,7 +3,11 @@ Rails.application.routes.draw do
 
   resources :users do
     get :get_purchase
+    get :purchase
+
     get :get_reserve
+    get :reserve
+
     get :get_cancel_reservation
     get 'tickets', on: :collection
   end
