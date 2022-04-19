@@ -1,3 +1,5 @@
+<p>Добро пожаловать, <%= current_user.login %></p>
+
 <p>
   <strong>ФИО:</strong>
   <%= @user.fio %>
@@ -18,4 +20,4 @@
   <%= @user.document_number %>
 </p>
 
-<%= link_to 'Back', :back %> |
+<%= button_to "Sign out", session_path, method: :delete %>

@@ -1,5 +1,26 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: %i[show tickets]
+  skip_before_action :require_login, only: [:new, :create]
+  before_action :set_user, only: :tickets
+
+  def new
+    @user = User.new
+  end
+
+  def create
+    @user = User.create(user_params)
+    if @user.valid?
+      session[:user_id] = @user.id
+      redirect_to @user
+    else
+      flash[:error] = "Error- please try to create an account again."
+      redirect_to new_user_path
+    end
+  end
+
+  # возвращает домашнюю страницу пользователя
+  def show
+    @user = User.find(params[:id])
+  end
   
   # возвращает журнал входа посетителей по типу действия: entry
   def journal
@@ -17,9 +38,6 @@ class UsersController < ApplicationController
       redirect_to :back, notice: 'Access to admin only!'
     end
   end
-
-  # возвращает домашнюю страницу пользователя
-  def show; end
 
   # возвращает все билеты пользователя по параметру user_id
   def tickets
@@ -63,6 +81,8 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:fio, :age, :document_number, :document_type, :role, :login, :password)
+    pp = params.require(:user).permit(:fio, :age, :document_type, :document_number, :login, :password)
+    pp[:document_type] = params[:user][:document_type].to_i
+    return pp
   end
 end

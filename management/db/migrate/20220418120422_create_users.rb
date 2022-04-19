@@ -7,7 +7,7 @@ class CreateUsers < ActiveRecord::Migration[6.1]
       t.string :document_number
       t.integer :role, default: 0
       t.string :login
-      t.string :password
+      t.string :password_digest
 
       t.timestamps
     end

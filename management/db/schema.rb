@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 2022_04_18_120422) do
     t.string "document_number"
     t.integer "role", default: 0
     t.string "login"
-    t.string "password"
+    t.string "password_digest"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
