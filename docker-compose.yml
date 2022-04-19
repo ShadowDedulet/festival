@@ -1,12 +1,13 @@
 version: '3.7'
 services:
   management:
-    build: ./management
-    command: rails s -b 0.0.0.0
+    build: ./management/
+    image: festival_management:latest
+    container_name: management
+    volumes:
+      - ./management/:/management
     ports:
       - 3000:3000
-    volumes:
-      - ./management:/management
     depends_on:
       - db
       - redis
@@ -15,11 +16,9 @@ services:
 
   data:
     build: ./data_api/
-    command: rails s -b 0.0.0.0
+    container_name: data
     volumes:
       - ./data_api/:/data
-    ports:
-      - 8080:3000
     depends_on:
       - db
 
@@ -29,7 +28,6 @@ services:
       - ./terminal/:/terminal
     depends_on:
       - db
-
 
   db:
     image: postgres:11.5
@@ -41,12 +39,14 @@ services:
       - postgres:/var/lib/postgresql/data
 
   sidekiq:
-    build: ./management
+    build: ./management/
+    container_name: management
     command: sidekiq
     volumes:
-      - ./management:/management
+      - ./management/:/management
     environment:
       REDIS_URL: redis://redis:6379/0
+      
   redis:
     image: redis:alpine
     volumes:
