@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   
   resources :tickets do
     post 'reserve',             on: :collection
+    post 'purchase',            on: :collection
     post 'cancel_reservation',  on: :collection
     post 'block_ticket',        on: :collection
   end
