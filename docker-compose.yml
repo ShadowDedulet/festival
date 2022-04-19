@@ -42,7 +42,7 @@ services:
 
   sidekiq:
     build: ./management/
-    container_name: management
+    container_name: sidekiq
     command: sidekiq
     volumes:
       - ./management/:/management
