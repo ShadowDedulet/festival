@@ -1,10 +1,10 @@
-<p>Отмена бронирования</p>
+<h1>Отмена бронирования</h1>
 
 <%= form_with url: user_cancel_reservation_path, method: :get do |form| %>
 
   <p>
   <%= form.label :reservation_id, "Номер брони" %>
-  <%= formt.integer :reservation_id, value: session[:reservation_id], min: 0, required: true %>
+  <%= form.number_field  :reservation_id, value: session[:reservation_id], min: 0, required: true %>
   </p>
 
   <p>

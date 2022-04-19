@@ -1,30 +1,30 @@
-<p>Покупка билета</p>
+<h1>Покупка билета</h1>
 
-<%= form_with url: user_reserve_path, method: :get do |form| %>
+<%= form_with url: user_purchase_path, method: :get do |form| %>
 
   <p>
   <%= form.label :reservation_id, "Номер брони" %>
-  <%= formt.integer :reservation_id, value: session[:reservation_id], min: 0, required: true %>
+  <%= form.number_field :reservation_id, value: session[:reservation_id], min: 0, required: true %>
   </p>
 
   <p>
   <%= form.label :fio, "ФИО" %>
-  <%= formtf.text_field :fio, value: current_user.fio, required: true %>
+  <%= form.text_field :fio, value: current_user.fio, required: true %>
   </p>
 
   <p>
   <%= form.label :age, "Возраст" %>
-  <%= formt.integer :age, value: current_user.age, in: 13..99, step: 1, required: true %>
+  <%= form.number_field :age, value: current_user.age, in: 13..99, step: 1, required: true %>
   </p>
 
   <p>
   <%= form.label :document_number, "Номер документа" %>
-  <%= formt.text_field :document_number, value: current_user.document_number, required: true %>
+  <%= form.text_field :document_number, value: current_user.document_number, required: true %>
   </p>
 
   <p>
   <%= form.label :document_type, "Тип документа" %>
-  <%= formt.select :document_type, [["Пасспорт", "passport"], ["Свидетельство о рождении", "birth_certificate"], ["Права", "driver_license"]], selected: current_user.document_type , required: true %>
+  <%= form.select :document_type, [["Пасспорт", "passport"], ["Свидетельство о рождении", "birth_certificate"], ["Права", "driver_license"]], selected: current_user.document_type , required: true %>
   </p>
 
   <p>
