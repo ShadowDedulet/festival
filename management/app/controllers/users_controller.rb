@@ -25,7 +25,7 @@ class UsersController < ApplicationController
   # возвращает журнал входа посетителей по типу действия: entry
   def journal
     if current_user.admin?
-      response = HTTParty.get('http://terminal:8080/journal')
+      response = HTTParty.get('http://terminal:3000/journal')
       
       respond_to do |format|
         if params[:action] == 'entry'
@@ -41,7 +41,7 @@ class UsersController < ApplicationController
 
   # возвращает все билеты пользователя по параметру user_id
   def tickets
-    response = HTTParty.get("http://danil:3000/tickets?user_id=#{current_user.id}")
+    response = HTTParty.get("http://data:3000/tickets?user_id=#{current_user.id}")
     render json: response.body
   end
 

@@ -1,12 +1,12 @@
 version: '3.7'
 services:
   management:
-    build: .
+    build: ./management
     command: rails s -b 0.0.0.0
     ports:
       - 3000:3000
     volumes:
-      - .:/usr/src
+      - ./management:/management
     depends_on:
       - db
       - redis
@@ -17,19 +17,13 @@ services:
     build: ./data_api/
     volumes:
       - ./data_api/:/data
-    ports:
-      - 3000:3000
     depends_on:
       - db
 
   terminal:
     build: ./terminal/
-    image: terminal:latest
-    container_name: terminal
     volumes:
       - ./terminal/:/terminal
-    ports:
-      - 3000:3000
     depends_on:
       - db
 
@@ -44,10 +38,10 @@ services:
       - postgres:/var/lib/postgresql/data
 
   sidekiq:
-    build: .
+    build: ./management
     command: sidekiq
     volumes:
-      - ./:/usr/src/
+      - ./management:/management
     environment:
       REDIS_URL: redis://redis:6379/0
   redis:
