@@ -1,5 +1,17 @@
 FROM ruby:3.0.3
 
+<<<<<<< HEAD
+=======
+# установка библиотек для работы приложения (сейчас отсутствуют)
+RUN apt-get update -qq && apt-get install -y locales
+
+# установка локали, чтобы испльзовать русский в консоли внутри контейнера
+RUN echo "ru_RU.UTF-8 UTF-8" > /etc/locale.gen && \
+  locale-gen ru_RU.UTF-8 && \
+  /usr/sbin/update-locale LANG=ru_RU.UTF-8
+ENV LC_ALL ru_RU.UTF-8
+
+>>>>>>> d52966d260d1cacdf90532efc40f76aefbd39451
 ENV APP_PATH=/management
 WORKDIR $APP_PATH
 

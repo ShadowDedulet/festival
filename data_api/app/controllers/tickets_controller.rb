@@ -3,7 +3,9 @@ class TicketsController < ApplicationController
   
   # GET /tickets ## Выводит список билетов в зависимости от параметров user_id или event_id 
   def index
-    render json: SelectTicketsService.new(params).call 
+    tickets = SelectTicketsService.new(params).call 
+    status = tickets.delete(:status)
+    render json: tickets, status: status
   end
 
   # Получение билета для журнала

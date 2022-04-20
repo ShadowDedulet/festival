@@ -13,7 +13,11 @@ Rails.application.routes.draw do
 
     get :get_block_ticket
     get :block_ticket
-  end
 
+    get 'tickets', on: :collection
+  end
+  
+  # resources :tickets, only: :index
+  resources :events, only: :index
   resources :sessions, only: %i[new create destroy]
 end

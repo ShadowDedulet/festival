@@ -178,6 +178,10 @@ GEM
     zeitwerk (2.5.4)
 
 PLATFORMS
+<<<<<<< HEAD
+=======
+  aarch64-linux
+>>>>>>> d52966d260d1cacdf90532efc40f76aefbd39451
   x86_64-linux
 
 DEPENDENCIES

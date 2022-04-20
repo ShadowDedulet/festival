@@ -16,7 +16,7 @@ class SelectTicketsService
   # Выбирает все билеты пользователя по его id
   def select_user_tickets
     tickets = Ticket.ticket_with_event.where(user_id: params[:user_id]) 
-    return { result: false, message: 'No any tickets' }  if tickets.empty?
+    return { result: false, message: 'No any tickets', status: 404 }  if tickets.empty?
     tickets.map do |ticket| 
       { id: ticket.id,
         type: ticket.ticket_type, 
@@ -28,8 +28,10 @@ class SelectTicketsService
 
   # выбирает все доступные билеты мероприятия
   def select_event_tickets
-    Event.find_by_id(params[:event_id]).tickets.available_tickets.to_h do |ticket|
+    Event.find(params[:event_id]).tickets.available_tickets.to_h do |ticket|
       [ ticket.ticket_type.to_sym, [ [ :amount, ticket.amount ], [ :price, ticket.start_price ] ].to_h ]
     end
+  rescue
+    { result: false, message: "Not found event with id: #{params[:event_id]}", status: 404 }
   end
 end

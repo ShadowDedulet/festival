@@ -1,6 +1,11 @@
 class UsersController < ApplicationController
+<<<<<<< HEAD
   skip_before_action :require_login, only: %i[new create]
   before_action :set_user, only: :tickets
+=======
+  skip_before_action :require_login, only: [:new, :create]
+  # before_action :set_user, only: :tickets
+>>>>>>> d52966d260d1cacdf90532efc40f76aefbd39451
 
   def new
     @user = User.new
@@ -25,8 +30,13 @@ class UsersController < ApplicationController
   # возвращает журнал входа посетителей по типу действия: entry
   def journal
     if current_user.admin?
+<<<<<<< HEAD
       response = HTTParty.get('http://terminal:8080/journal')
 
+=======
+      response = HTTParty.get('http://terminal:3000/journal')
+      
+>>>>>>> d52966d260d1cacdf90532efc40f76aefbd39451
       respond_to do |format|
         if params[:action] == 'entry'
           format.json { render json: response.body[:entry] }
@@ -41,8 +51,18 @@ class UsersController < ApplicationController
 
   # возвращает все билеты пользователя по параметру user_id
   def tickets
-    response = HTTParty.get("http://danil:3000/tickets?user_id=#{current_user.id}")
-    render json: response.body
+    response = HTTParty.get("http://data:3000/tickets?user_id=#{current_user.id}")
+    if response.code == 404
+      @tickets = { message: response['message'], status: response.code } 
+    else
+      @tickets = JSON.parse(response.body).map do |ticket|
+        {
+          type: ticket['type'],
+          start_price: ticket['start_price'],
+          event: ticket['event']
+        }
+      end
+    end
   end
 
   def user_info

@@ -1,0 +1,14 @@
+<% unless @tickets.include? :status %>
+  <% @tickets.each do |ticket| %>
+    <div class='container'>
+      <p>Тип билета: <strong><%= ticket[:type] %></strong></p>
+      <p>Цена: <%= ticket[:start_price] %></p>
+      <p>Мероприятие: <%= ticket[:event]['name'] %></p>
+      <p>Дата мероприятия: <%= DateTime.parse(ticket[:event]['date_start']).to_formatted_s(:long) %></p>
+    </div>
+  <% end %>
+<% else %>
+  <%= @tickets[:message] %>
+<% end %>
+
+<p><%= link_to 'Назад', :back %></p>
