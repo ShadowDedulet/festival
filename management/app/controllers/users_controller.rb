@@ -92,15 +92,11 @@ class UsersController < ApplicationController
   def reserve
     response = PostService.call(
       'http://data:3000/tickets/reserve',
-      { ticket_type: params[:ticket_type],
-        event_date: params[:event_date],
-      }
+      { ticket_type: params[:ticket_type], event_date: params[:event_date] }
     )
 
-    @ticket_price = CalcTicketPriceService.new(params[:ticket_type], params[:event_date]).call
-
     # расскоментировать при заполнении data данными
-    return redirect_to user_get_reserve_path unless response[:err]
+    # return redirect_to user_get_reserve_path unless response[:err]
 
     session[:reservation_id] = response['reservation_id'] unless response['err']
     pp(['id:', response['reservation_id']])
@@ -131,6 +127,18 @@ class UsersController < ApplicationController
     # else
     # redirect_to :back, notice: 'Access to admin only!'
     # end
+  end
+
+  def block_ticket
+    # redirect_to :back, notice: 'Access to admin only!' unless current_user.admin?
+
+    response = PostService.call(
+      'http://data:3000/tickets/block_ticket',
+      { ticket_id: params[:ticket_id], document_number: params[:document_number] }
+    )
+
+    # TODO: redirect
+    render json: response
   end
 
   def block_ticket

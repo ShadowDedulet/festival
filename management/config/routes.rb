@@ -20,9 +20,8 @@ Rails.application.routes.draw do
 
     get 'tickets', on: :collection
   end
-
-  resources :events, only: :index
+  
   # resources :tickets, only: :index
-
-  resources :sessions, only: [:new, :create, :destroy]
+  resources :events, only: :index
+  resources :sessions, only: %i[new create destroy]
 end
