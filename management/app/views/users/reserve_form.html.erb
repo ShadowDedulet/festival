@@ -3,10 +3,10 @@
 <%= form_with url: user_reserve_path, method: :get do |form| %>
 
   <p>
-  <%= form.label :ticket_type_0, "Категория 0" %>
+  <%= form.label :ticket_type_0, "Fan zone" %>
   <%= form.radio_button :ticket_type, "0", required: true %>
 
-  <%= form.label :ticket_type_1, "Категория 1" %>
+  <%= form.label :ticket_type_1, "VIP zone" %>
   <%= form.radio_button :ticket_type, "2" %>
   </p>
 

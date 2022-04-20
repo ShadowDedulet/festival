@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
-  skip_before_action :require_login, only: %i[new create]
-  before_action :set_user, only: :tickets
+  skip_before_action :require_login, only: [:new, :create]
 
   def new
     @user = User.new
@@ -12,28 +11,18 @@ class UsersController < ApplicationController
       session[:user_id] = @user.id
       redirect_to @user
     else
-      flash[:error] = 'Error- please try to create an account again.'
+      flash[:error] = 'Please try to create an account again.'
       redirect_to new_user_path
     end
   end
 
   # возвращает домашнюю страницу пользователя
-  def show
-    @user = User.find(params[:id])
-  end
-
+  def show; end
+  
   # возвращает журнал входа посетителей по типу действия: entry
   def journal
     if current_user.admin?
-      response = HTTParty.get('http://terminal:3000/journal')
-      
-      respond_to do |format|
-        if params[:action] == 'entry'
-          format.json { render json: response.body[:entry] }
-        elsif params[:action] == 'exit'
-          format.json { render json: response.body[:exit] }
-        end
-      end
+      @journal = HTTParty.get("http://terminal:3000/journal")
     else
       redirect_to :back, notice: 'Access to admin only!'
     end
@@ -55,9 +44,15 @@ class UsersController < ApplicationController
     end
   end
 
+  # возвращает информацию обо всех мероприятиях
+  def events
+    events = HTTParty.get('http://data:3000/events')
+    render json: events
+  end
+
+  # возвращает информацию о юзере
   def user_info
-    user = User.find(params[:user_id])
-    render json: user
+    render json: current_user, except: :password_digest
   end
 
   # возвращает форму покупки билета
@@ -146,14 +141,22 @@ class UsersController < ApplicationController
     render json: response
   end
 
-  private
+  def block_ticket
+    # redirect_to :back, notice: 'Access to admin only!' unless current_user.admin?
 
-  def set_user
-    @user = User.find(params[:id])
+    response = PostService.call(
+      'http://data:3000/tickets/block_ticket',
+      { ticket_id: params[:ticket_id], document_number: params[:document_number] }
+    )
+
+    # TODO: redirect
+    render json: response
   end
 
+  private
+
   def user_params
-    pp = params.require(:user).permit(:fio, :age, :document_type, :document_number, :login, :password)
+    pp = params.require(:user).permit(:id, :fio, :age, :document_type, :document_number, :login, :password)
     pp[:document_type] = params[:user][:document_type].to_i
     pp
   end
