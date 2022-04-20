@@ -1,13 +1,33 @@
-version: '3'
+version: '3.7'
 services:
-  data:
-    build: ./data/
+  management:
+    build: ./management/
+    image: festival_management:latest
     volumes:
-      - ./data/:/data
+      - ./management/:/management
     ports:
-      -3000:3000
+      - 3000:3000
     depends_on:
       - db
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379/0
+
+  data:
+    build: ./data_api/
+    volumes:
+      - ./data_api/:/data
+    depends_on:
+      - db
+
+  terminal:
+    build: ./terminal/
+    image: terminal:latest
+    volumes:
+      - ./terminal/:/terminal
+    depends_on:
+      - db
+
   db:
     image: postgres:11.5
     environment:
@@ -15,3 +35,21 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - postgres:/var/lib/postgresql/data
+
+  sidekiq:
+    build: ./management/
+    command: sidekiq
+    volumes:
+      - ./management/:/management
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis:/data
+
+volumes:
+  postgres:
+  redis:
+

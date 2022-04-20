@@ -1,0 +1,35 @@
+<h1>Регистрация</h1>
+
+<%= form_for @user do |f| %>
+  <p>
+  <%= f.label :fio %>
+  <%= f.text_field :fio%><br>
+  </p>
+
+  <p>
+  <%= f.label :age %>
+  <%= f.number_field :age%><br>
+  </p>
+
+  <p>
+  <%= f.label :document_type %>
+  <%= f.number_field :document_type%><br>
+  </p>
+
+  <p>
+  <%= f.label :document_number %>
+  <%= f.text_field :document_number%><br>
+  </p>
+
+  <p>
+  <%= f.label :login %>
+  <%= f.text_field :login%><br>
+  </p>
+
+  <p>
+  <%= f.label :password %>
+  <%= f.password_field :password %><br>
+  </p>
+
+  <%= f.submit "Create account" %>
+<% end %>
