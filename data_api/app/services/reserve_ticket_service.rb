@@ -1,28 +1,32 @@
 # Сервис бронирования билетов
 class ReserveTicketService
-  attr_reader :ticket_id
-
   def initialize(params)
-    @ticket_id = params[:id]
+    @params = params
   end
 
   def call
-      ticket = find_ticket
-    rescue ActiveRecord::RecordNotFound => err
-      { result: false, err: err.message, status: 406 }
-    else
-      ticket.reserved! # смена статуса билета на "забронированный"
-      time = DateTime.now
-      reserve = Reserve.create(ticket: ticket, time_start: time, time_end: time + 5.minute) # создание записи в таблице бронирования
-      { reserve_id: reserve.id, end_reservation_time: reserve.time_end, status: 200 }
+    ticket = find_ticket
+    return { result: false, err: 'Tickets/Events not found', status: 406 } unless ticket
+
+    ticket.reserved!
+
+    reserve = Reserve.create(ticket: ticket, time_start: DateTime.now, time_end: DateTime.now + 5.minute)
+    { reservation_id: reserve.id, reservation_end_time: reserve.time_end, status: 200 }
+  rescue StandardError => e # PLS FIX, NO CATCHING STANDARDS PLS
+    return { result: false, err: e, status: 406 }
   end
 
-  private 
+  private
 
-  # Поиск первого доступного для продажи билета
+  # Мы считаем, что не могут быть 2 параллельных мероприятия
+  # TODO:
+  # иначе передаем список для выбора пользователя
   def find_ticket
-    ticket = Ticket.find_by(user_id: nil, status: :accessed)
-    raise ActiveRecord::RecordNotFound, 'Ticket not found' if ticket.nil?
-    ticket
+    return Ticket.joins(:event).where(
+      ['tickets.ticket_type = ? AND tickets.status = 0 AND events.date_start <= ? AND events.date_end >= ?',
+       @params[:ticket_type],
+       @params[:event_date],
+       @params[:event_date]]
+    ).first
   end
 end

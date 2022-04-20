@@ -1,5 +1,5 @@
-# Evula Andzhey
-class PurchaseService
+# Сервис покупки билетов
+class PurchaseTicketService
   def initialize(params)
     @params = params
   end

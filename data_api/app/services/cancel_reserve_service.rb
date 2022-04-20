@@ -8,7 +8,9 @@ class CancelReserveService
 
 
   def call
-    Reserve.find(reservation_id).ticket.accessed! # смена статуса билета на доступный для продажи
+    reservation = Reserve.find(reservation_id)
+    reservation.ticket.accessed! # смена статуса билета на доступный для продажи
+    reservation.delete
   rescue
     { result: false, err: 'Ticket not found', status: 406 }
   else

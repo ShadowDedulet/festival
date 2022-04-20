@@ -16,23 +16,16 @@ class TicketsController < ApplicationController
   end
 
   # POST /reserve ## Бронирование билетов 
-  # def reserve
-  #   reserve = ReserveTicketService.new(params).call
-  #   status = reserve.delete(:status)
-  #   render json: reserve, status: status
-  # end
-
-  # Evula Andzhey
   def reserve
-    reservation = ReserveService.new(params).call
+    reservation = ReserveTicketService.new(params).call
     status = reservation.delete(:status)
     pp(reservation)
     render json: reservation, status: status
   end
 
-  # Evula Andzhey
+  # POST /purchase ## Покупка билетов 
   def purchase
-    purchasement = PurchaseService.new(params).call
+    purchasement = PurchaseTicketService.new(params).call
     status = purchasement.delete(:status)
     render json: purchasement, status: status
   end
