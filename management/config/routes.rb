@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     get :block_ticket
 
     get :journal
+    get :enter
+    get :exit
 
     get 'tickets', on: :collection
   end

@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  skip_before_action :require_login, only: [:new, :create]
+  skip_before_action :require_login, only: [:new, :create, :index]
 
   def new
     @user = User.new
@@ -16,8 +16,18 @@ class UsersController < ApplicationController
     end
   end
 
+  def index
+    pp('LOLOLLLOLO')
+    user = User.find_by_id(params[:userid])
+    # pp({ fio: user.fio }.to_json)
+    pp(user)
+    return render json: { fio: user.fio }.to_json if user
+
+    render json: { result: "false", error: "Wrong user id"}
+  end
+
   # возвращает домашнюю страницу пользователя
-  def show; end
+  def show;end
   
   # возвращает журнал входов/выходов посетителей
   def journal 
@@ -33,16 +43,16 @@ class UsersController < ApplicationController
       { ticket_id: params[:ticket_id], zone_type: params[:zone_type] }
     )
 
-    render json: res.to_json
+    render json: response.to_json
   end
 
   def exit
     response = PostService.call(
-      'http://terminal:3000/enter',
+      'http://terminal:3000/exit',
       { ticket_id: params[:ticket_id], zone_type: params[:zone_type] }
     )
 
-    render json: res.to_json
+    render json: response.to_json
   end
 
   # возвращает все билеты пользователя по параметру user_id
