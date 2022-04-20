@@ -19,13 +19,30 @@ class UsersController < ApplicationController
   # возвращает домашнюю страницу пользователя
   def show; end
   
-  # возвращает журнал входа посетителей по типу действия: entry
-  def journal
-    if current_user.admin?
-      @journal = HTTParty.get("http://terminal:3000/journal")
-    else
-      redirect_to :back, notice: 'Access to admin only!'
-    end
+  # возвращает журнал входов/выходов посетителей
+  def journal 
+    res = HTTParty.get("http://terminal:3000/journal", query: journal_params)
+    res.headers["x-frame-options"] = "ALLOW-FROM http://terminal:3000"
+
+    render json: res.to_a.to_json
+  end
+
+  def enter
+    response = PostService.call(
+      'http://terminal:3000/enter',
+      { ticket_id: params[:ticket_id], zone_type: params[:zone_type] }
+    )
+
+    render json: res.to_json
+  end
+
+  def exit
+    response = PostService.call(
+      'http://terminal:3000/enter',
+      { ticket_id: params[:ticket_id], zone_type: params[:zone_type] }
+    )
+
+    render json: res.to_json
   end
 
   # возвращает все билеты пользователя по параметру user_id
@@ -63,19 +80,25 @@ class UsersController < ApplicationController
   def purchase
     # return json: { error: 'Must be at least 13 y/o' } if params[:age] < 13
 
-    user = {
+    user_params = {
       fio: params[:fio],
       age: params[:age],
       document_number: params[:document_number],
       document_type: params[:document_type]
     }
 
+    # Проверка на ужде существование и т.д.
+    # user = UserCreateService(user_params)
+
+    user = current_user
+    render json: { error: "Wrong user params"} unless user.id
+
     # Осуществить проверки:
     #   На наличие такого фио по дате
     #   На наличие такого док_тип + док_нам по дате
     response = PostService.call(
       'http://data:3000/tickets/purchase',
-      { reservation_id: params[:reservation_id], user: user }
+      { reservation_id: params[:reservation_id], user_id: user.id }
     )
 
     session.delete(:reservation_id) unless response['err']
@@ -159,5 +182,9 @@ class UsersController < ApplicationController
     pp = params.require(:user).permit(:id, :fio, :age, :document_type, :document_number, :login, :password)
     pp[:document_type] = params[:user][:document_type].to_i
     pp
+  end
+
+  def journal_params
+    params.permit(:user_id, :action_type, :created_at, :fio, :status, :ticket_id, :sort_by => [])
   end
 end

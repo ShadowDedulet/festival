@@ -6,10 +6,13 @@ class PurchaseTicketService
 
   def call
     reservation = Reserve.find_by_id(@params[:reservation_id])
-
     return { result: false, err: 'Reservation not valid', status: 406 } unless reservation
 
-    reservation.ticket.sold!
+    ticket = reservation.ticket
+    ticket.status = 2
+    ticket.user_id = @params[:user_id]
+    ticket.save
+
     reservation.delete
 
     { result: true, status: 200 }
