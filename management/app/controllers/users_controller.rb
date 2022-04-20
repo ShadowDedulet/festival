@@ -114,7 +114,7 @@ class UsersController < ApplicationController
     #   { reservation_id: params[:reservation_id] }
     # )
 
-    DeleteReservationJob.perform_async(params[:reservation_id])
+    DeleteReservationJob.set(wait: 5.minutes).perform_later(params[:reservation_id])
     session.delete(:reservation_id) #unless response['err']
 
     # TODO: redirect
