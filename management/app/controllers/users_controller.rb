@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   skip_before_action :require_login, only: [:new, :create]
-  before_action :set_user, only: :tickets
+  # before_action :set_user, only: :tickets
 
   def new
     @user = User.new
@@ -42,7 +42,17 @@ class UsersController < ApplicationController
   # возвращает все билеты пользователя по параметру user_id
   def tickets
     response = HTTParty.get("http://data:3000/tickets?user_id=#{current_user.id}")
-    render json: response.body
+    if response.code == 404
+      @tickets = { message: response['message'], status: response.code } 
+    else
+      @tickets = JSON.parse(response.body).map do |ticket|
+        {
+          type: ticket['type'],
+          start_price: ticket['start_price'],
+          event: ticket['event']
+        }
+      end
+    end
   end
 
   def user_info

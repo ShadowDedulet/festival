@@ -4,7 +4,14 @@ class EventsController < ApplicationController
   # просмотр наступающих и идущих мероприятий доступен пользователю и администратору
   # просмотр всех мероприятий доступен только администратору (прошедшие и нет)
   def index
-    render json: Event.not_ended
+    events = Event.not_ended
+    events_with_tickets = events.map do |event|
+      { name: event.name, 
+        date_start: event.date_start, 
+        date_end: event.date_end, 
+        tickets: SelectTicketsService.new({event_id: event.id}).call }
+    end
+    render json: events_with_tickets
   end
 
   # Просматривать определенные билеты может пользователь(только те, которые принадлежат ему) и администратор любые
