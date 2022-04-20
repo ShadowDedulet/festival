@@ -15,6 +15,7 @@ services:
 
   data:
     build: ./data_api/
+    image: festival_data:latest
     command: rails s -b 0.0.0.0
     volumes:
       - ./data_api/:/data
