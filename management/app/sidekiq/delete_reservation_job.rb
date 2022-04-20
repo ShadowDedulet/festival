@@ -1,7 +1,11 @@
 class DeleteReservationJob
   include Sidekiq::Job
 
-  def perform(*args)
-    # Do something
+  def perform(reservation_id)
+    sleep 5.minutes
+    PostService.call(
+      'http://data:3000/tickets/cancel_reservation',
+      { reservation_id: reservation_id }
+    )
   end
 end
