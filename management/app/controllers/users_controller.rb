@@ -142,15 +142,16 @@ class UsersController < ApplicationController
   end
 
   def cancel_reservation
-    response = PostService.call(
-      'http://data:3000/tickets/cancel_reservation',
-      { reservation_id: params[:reservation_id] }
-    )
+    # response = PostService.call(
+    #   'http://data:3000/tickets/cancel_reservation',
+    #   { reservation_id: params[:reservation_id] }
+    # )
 
-    session.delete(:reservation_id) unless response['err']
+    DeleteReservationJob.set(wait: 5.minutes).perform_later(params[:reservation_id])
+    session.delete(:reservation_id) #unless response['err']
 
     # TODO: redirect
-    render json: response
+    #render json: response
   end
 
   # возвращает форму блокировки билета
