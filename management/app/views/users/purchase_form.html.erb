@@ -28,6 +28,11 @@
   </p>
 
   <p>
+  <%= form.label :ticket_price, 'Цена билета' %>
+  <%= form.text_field :ticket_price, value: @ticket_price, required: true %>
+  </p>
+
+  <p>
   <%= form.submit "Купить" %>
   </p>
 

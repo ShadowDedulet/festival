@@ -11,7 +11,7 @@ class UsersController < ApplicationController
       session[:user_id] = @user.id
       redirect_to @user
     else
-      flash[:error] = 'Error- please try to create an account again.'
+      flash[:error] = 'Please try to create an account again.'
       redirect_to new_user_path
     end
   end
@@ -92,11 +92,15 @@ class UsersController < ApplicationController
   def reserve
     response = PostService.call(
       'http://data:3000/tickets/reserve',
-      { ticket_type: params[:ticket_type], event_date: params[:event_date] }
+      { ticket_type: params[:ticket_type],
+        event_date: params[:event_date],
+      }
     )
 
+    @ticket_price = CalcTicketPriceService.new(params[:ticket_type], params[:event_date]).call
+
     # расскоментировать при заполнении data данными
-    # return redirect_to user_get_reserve_path unless response[:err]
+    return redirect_to user_get_reserve_path unless response[:err]
 
     session[:reservation_id] = response['reservation_id'] unless response['err']
     pp(['id:', response['reservation_id']])

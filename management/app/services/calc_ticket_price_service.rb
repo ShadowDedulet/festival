@@ -40,7 +40,7 @@ class CalcTicketPriceService
   def event_id
     id = 0
 
-    response = HTTParty.get('http://data/events')
+    response = HTTParty.get('http://data:3000/events')
 
     response.body.each do |event|
       id += event[:id] if event[:date_start] == @event_date

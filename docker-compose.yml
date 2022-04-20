@@ -37,7 +37,7 @@ services:
       - postgres:/var/lib/postgresql/data
 
   sidekiq:
-    build: ./management/
+    build: ./management
     command: sidekiq
     volumes:
       - ./management/:/management

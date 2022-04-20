@@ -9,7 +9,7 @@ gem 'rails', '~> 6.1.5'
 gem 'httparty'
 gem 'pg'
 gem 'redis'
-gem 'sidekiq'
+gem 'sidekiq', require: ['sidekiq', 'sidekiq/web']
 # Use Puma as the app server
 gem 'puma', '~> 5.0'
 # Use SCSS for stylesheets

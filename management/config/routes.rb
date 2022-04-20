@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
-  root 'users#get_cancel_reservation'
+  mount Sidekiq::Web => '/sidekiq'
+
+  root 'users#show'
 
   resources :users do
     get :get_purchase
@@ -9,6 +11,13 @@ Rails.application.routes.draw do
     get :reserve
 
     get :get_cancel_reservation
+    get :cancel_reservation
+
+    get :get_block_ticket
+    get :block_ticket
+
+    get :journal
+
     get 'tickets', on: :collection
   end
 
