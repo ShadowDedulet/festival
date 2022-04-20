@@ -8,7 +8,7 @@ class ActionService
 
   def call
     # Попытка повторить событие
-    if @last_action['action'] == @action_name
+    if @last_action['action_type'] == @action_name
       @action_obj.status = false
       return { result: 'false', error: "Already #{@action_name}ed" }
     end

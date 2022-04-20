@@ -22,17 +22,21 @@ class ActionParamsService
   # Проверяем переданный zone_type
   def validate_zone
     ticket = FetchService.call("http://data:3000/tickets/#{@params[:ticket_id]}")
+    ticket = JSON.parse(ticket)
 
     # Нет билета с таким id
-    return { response: { result: 'false', error: 'Wrong ticket_id' } } unless ticket
+    return { response: { result: 'false', error: 'Wrong ticket_id' } } unless ticket['result']
+
+    user = FetchService.call("http://management:3000/users?userid=#{ ticket['user_id'] }")
+    user = JSON.parse(user)
 
     # Все ок
-    return { fio: ticket['fio'], ticket_id: @params[:ticket_id] } if ticket['type'] == @params[:zone_type]
+    return { fio: user['fio'], ticket_id: @params[:ticket_id] } if ticket['ticket_type'] == @params[:zone_type]
 
     # Неверная зона
     {
       response: { result: 'false', error: 'Wrong zone type' },
-      fio: ticket['fio'], ticket_id: @params[:ticket_id]
+      fio: user['fio'], ticket_id: @params[:ticket_id]
     }
   end
 end

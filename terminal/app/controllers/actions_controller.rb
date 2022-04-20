@@ -6,7 +6,9 @@ class ActionsController < ApplicationController
 
   # Вывод журнала
   def index
-    render json: ActionSelectorService.new(params).call.as_json(except: [:updated_at])
+    journal = ActionSelectorService.new(params).call.as_json(except: [:updated_at])
+    pp(journal)
+    render json: journal
   end
 
   # Вход
@@ -31,20 +33,14 @@ class ActionsController < ApplicationController
 
     return unless @ret[:response]
 
-    if @ret[:fio] && @ret[:ticket_id]
-      @action = Action.new(
-        action_type: params['action'], fio: @ret[:fio], status: false, ticket_id: @ret[:ticket_id]
-      )
-    end
-
     render json: @ret[:response], status: :not_acceptable
   end
 
   # Получаем последнее успешное событие
   def last_action
-    @last_action = Action.last_action
+    @last_action = Action.where(ticket_id: @ret[:ticket_id]).last_action
 
-    @last_action = { 'action' => 'exit' } if @last_action.blank?
+    @last_action = { 'action_type' => 'exit' } if @last_action.blank?
   end
 
   # Сохраняем новую запись
