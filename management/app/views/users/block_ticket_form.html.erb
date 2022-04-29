@@ -1,0 +1,19 @@
+<h1>Блокировка билета</h1>
+
+<%= form_with url: user_block_ticket_path, method: :get do |form| %>
+
+  <p>
+  <%= form.label :ticket_id, "Номер билета" %>
+  <%= form.number_field  :ticket_id, min: 0, required: true %>
+  </p>
+
+  <p>
+  <%= form.label :document_number, "Номер документа" %>
+  <%= form.text_field :document_number, required: true %>
+  </p>
+
+  <p>
+  <%= form.submit "Заблокировать" %>
+  </p>
+
+<% end%>

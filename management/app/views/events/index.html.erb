@@ -1,0 +1,18 @@
+<% @events.each do |event| %>
+  <div class='container'>
+    <h2><%= event[:name] %></h2>
+    <p>Начало: <%= event[:date_start] %></p>
+    <p>Конец: <%= event[:date_end] %></p>
+    <% event[:tickets].each do |type, data| %>
+      <p><i> <%= type %>:</i> количество - <%= data['amount'] %>, цена - <%= data['price'] %> &#8381; 
+        <%= link_to user_get_reserve_path(current_user) do %>
+          Забронировать
+        <% end %>
+      </p>
+      
+    <% end %>
+  </div>
+<% end %>
+
+<p><%= link_to 'Назад', :back %></p>
+

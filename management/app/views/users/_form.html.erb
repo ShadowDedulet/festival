@@ -1,0 +1,23 @@
+<p>Добро пожаловать, <%= current_user.login %></p>
+
+<p>
+  <strong>ФИО:</strong>
+  <%= current_user.fio %>
+</p>
+
+<p>
+  <strong>Возраст:</strong>
+  <%= current_user.age %>
+</p>
+
+<p>
+  <strong>Документ:</strong>
+  <%= current_user.document_type %>
+</p>
+
+<p>
+  <strong>Номер документа:</strong>
+  <%= current_user.document_number %>
+</p>
+
+<%= button_to "Sign out", session_path, method: :delete %>

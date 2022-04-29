@@ -1,0 +1,7 @@
+<%= render 'form' %>
+
+<% if current_user.admin? %>
+  <%= render 'admin_actions' %>
+<% else %>
+  <%= render 'user_actions' %>
+<% end %>
